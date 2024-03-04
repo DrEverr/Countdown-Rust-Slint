@@ -1,0 +1,22 @@
+import { Button, VerticalBox } from "std-widgets.slint";
+
+export component AppWindow inherits Window {
+    title: "Countdown Timer";
+
+    callback start-timer;
+
+    in property<string> time;
+
+    VerticalBox{
+        Button {
+            text: "Start";
+            clicked => {
+                root.start-timer();
+            }
+        }
+
+        Text {
+            text: "\{time}";
+        }
+    }
+}
