@@ -1,13 +1,40 @@
-import { Button, VerticalBox } from "std-widgets.slint";
+import { Button, VerticalBox, HorizontalBox } from "std-widgets.slint";
+
+struct DeltaTime {
+    seconds: int,
+    minutes: int,
+    hours: int,
+    days: int,
+    running: bool,
+}
+
+component Timer inherits Rectangle {
+    in property<DeltaTime> time;
+    in property<bool> running;
+
+    height: running ? 50px : 0px;
+    Text {
+        text: "\{time.days}d \{time.hours}h \{time.minutes}m \{time.seconds}s";
+    }
+}
 
 export component AppWindow inherits Window {
     title: "Countdown Timer";
 
-    callback start-timer;
+    width: 300px;
+    height: 200px;
 
-    in property<string> time;
+    callback start-timer;
+    callback add-timer(string);
+
+    in property<string> hint;
+    in-out property<[DeltaTime]> timers: [
+        { running: false },
+    ];
 
     VerticalBox{
+        alignment: start;
+
         Button {
             text: "Start";
             clicked => {
@@ -15,8 +42,26 @@ export component AppWindow inherits Window {
             }
         }
 
+        HorizontalBox {
+            input := TextInput {
+                width: 2 * parent.width / 3;
+            }
+
+            Button {
+                text: "Add";
+                clicked => {
+                    root.add-timer(input.text);
+                }
+            }
+        }
+
         Text {
-            text: "\{time}";
+            text: "\{hint}";
+        }
+
+        for timer in timers : Timer {
+            time: timer;
+            running: timer.running;
         }
     }
 }
